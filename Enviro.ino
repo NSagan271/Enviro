@@ -4,10 +4,23 @@
 #include "CO2.h"
 
 #define OUT_TO_V 5.0/1023
-#define M_O3 (499.0*14.5*pow(10,-6))
+#define M_O3 (499.0*-14.5*pow(10,-6))
+#define M_SO2 (100.0*40.59*pow(10,-6))
+#define M_CO (100.0*5.42*pow(10,-6))
+#define M_NO2 (499.0*-44.78*pow(10,-6))
+
 #define TIMES 80
 #define O3 A0
 #define O3_REF A1
+
+#define SO2 A2
+#define SO2_REF A3
+
+#define CO A4
+#define CO_REF A5
+
+#define NO2 A6
+#define NO2_REF A7
 
 #define DUST A3
 #define DUST_LED_POW 3
@@ -31,6 +44,10 @@ void setup() {
   pinMode (DUST,INPUT);
   pinMode (O3,INPUT);
   pinMode (O3_REF,INPUT);
+  pinMode (SO2,INPUT);
+  pinMode (SO2_REF,INPUT);
+  pinMode (CO,INPUT);
+  pinMode (CO_REF,INPUT);
   Serial.begin(9600);
 
   delay(2000);
@@ -79,13 +96,49 @@ float getO3(){
   return 1/M_O3*(vGas-vRef);
 }
 float getNO2(){
-  return 0;
+  int count = 0;
+  float vRef = 0;
+  float vGas = 0;
+  while(count<TIMES){
+    count++;
+    vRef += analogRead(NO2_REF)*OUT_TO_V;
+    vGas += analogRead(NO2)*OUT_TO_V;
+    delay(62.5);
+  }
+  count = 0;
+  vRef/=TIMES;
+  vGas/=TIMES;
+  return 1/M_NO2*(vGas-vRef);
 }
 float getSO2(){
-  return 0;
+  int count = 0;
+  float vRef = 0;
+  float vGas = 0;
+  while(count<TIMES){
+    count++;
+    vRef += analogRead(SO2_REF)*OUT_TO_V;
+    vGas += analogRead(SO2)*OUT_TO_V;
+    delay(62.5);
+  }
+  count = 0;
+  vRef/=TIMES;
+  vGas/=TIMES;
+  return 1/M_SO2*(vGas-vRef);
 }
 float getCO(){
-  return 0;
+  int count = 0;
+  float vRef = 0;
+  float vGas = 0;
+  while(count<TIMES){
+    count++;
+    vRef += analogRead(CO_REF)*OUT_TO_V;
+    vGas += analogRead(CO)*OUT_TO_V;
+    delay(62.5);
+  }
+  count = 0;
+  vRef/=TIMES;
+  vGas/=TIMES;
+  return 1/M_CO*(vGas-vRef);
 }
 float getDust(){
   float dust = 0;
