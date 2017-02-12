@@ -1,12 +1,12 @@
 #include <Arduino.h>
-class SpecSensor: public Sensor
+class SpecSensor
 {
 public:
   float gasLevel;
   int pin;
-  float M;
-  void initSensor(int p, float m);
-  virtual void updateData();
+  float m;
+  void initSensor(int sensor);
+  void updateData();
 private:
   float gasValues[];
   float getAvgGasValue();
