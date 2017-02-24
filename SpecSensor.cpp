@@ -1,35 +1,28 @@
 #include "SpecSensor.h"
 #define TIMES 80
-#define OUT_TO_V 5.0/1023
-//O3 = 0, SO2 = 1, CO = 2
-const float M[4] =  {(499.0*-14.5*pow(10,-6)), (100.0*40.59*pow(10,-6)), (100.0*5.42*pow(10,-6)), (499.0*-44.78*pow(10,-6))};
-const float PINS[4] = {A0,A1,A2,A3};
+#define OUT_TO_V 5.03/1023
 
-float gasValues[TIMES];
-float gasLevel = 0;
-int pin = A0;
-float m = 1;
-void SpecSensor::initSensor(int sensor){
-  pin = PINS[sensor];
-  m = M[sensor];
+
+SpecSensor::SpecSensor(int pin, double m, double ref){
+  Serial.begin(9600);
+  gasSum = 0;
+  this->pin = pin;
+  this->m = m;
+  this->ref = ref;
   pinMode(pin,INPUT);
-
-  for (int i = 0; i < TIMES; i++){
-    gasValues[i] = 0;
-  }
 }
 void SpecSensor::updateData(){
-  for (int i = 0; i < TIMES; i++){
-    gasValues[i] = 1/m*analogRead(pin)*OUT_TO_V;
-    delay(5000.0/TIMES);
-  }
-  gasLevel = getAvgGasValue();
+  Serial.println(pin);
+  Serial.println(analogRead(pin)*OUT_TO_V);
+  Serial.println(ref);
+  gasSum+= 1/m*(analogRead(pin)-ref)*OUT_TO_V;
+  gasSumCount++;
 }
-float SpecSensor::getAvgGasValue(){
-  float sum = 0;
-  for (int i = 0; i < TIMES; i++){
-    sum+=gasValues[i];
-  }
-  return sum/TIMES;
+double lev;
+double SpecSensor::getGas(){
+  lev = gasSum/gasSumCount;
+  gasSumCount = 0;
+  gasSum = 0;
+  return lev;
 }
 

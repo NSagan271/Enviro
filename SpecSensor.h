@@ -2,13 +2,14 @@
 class SpecSensor
 {
 public:
-  float gasLevel;
-  int pin;
-  float m;
-  void initSensor(int sensor);
+  double getGas();
   void updateData();
+  SpecSensor(int, double, double);
 private:
-  float gasValues[];
-  float getAvgGasValue();
+  int pin;
+  double m;
+  double ref;
+  double gasSum;
+  long gasSumCount;
 };
 
