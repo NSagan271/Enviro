@@ -4,18 +4,16 @@
 
 
 SpecSensor::SpecSensor(int pin, double m, double ref){
-  Serial.begin(9600);
   gasSum = 0;
   this->pin = pin;
   this->m = m;
   this->ref = ref;
   pinMode(pin,INPUT);
 }
+double next;
 void SpecSensor::updateData(){
-  Serial.println(pin);
-  Serial.println(analogRead(pin)*OUT_TO_V);
-  Serial.println(ref);
-  gasSum+= 1/m*(analogRead(pin)-ref)*OUT_TO_V;
+  next = (analogRead(pin))*OUT_TO_V; 
+  if (next>0) gasSum+=next;
   gasSumCount++;
 }
 double lev;
