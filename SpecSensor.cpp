@@ -2,25 +2,19 @@
 #define TIMES 80
 #define OUT_TO_V 5.03/1023
 
-
-SpecSensor::SpecSensor(int pin, double m, double ref){
+SpecSensor::SpecSensor(int pin){
   gasSum = 0;
   this->pin = pin;
-  this->m = m;
-  this->ref = ref;
   pinMode(pin,INPUT);
 }
-double next;
-void SpecSensor::updateData(){
-  next = (analogRead(pin))*OUT_TO_V; 
-  if (next>0) gasSum+=next;
-  gasSumCount++;
-}
-double lev;
 double SpecSensor::getGas(){
-  lev = gasSum/gasSumCount;
   gasSumCount = 0;
   gasSum = 0;
-  return lev;
+  for (int i = 0; i < TIMES; i++){
+    next = (analogRead(pin))*OUT_TO_V; 
+    if (next>0) gasSum+=next;
+    gasSumCount++;
+    delay(62.5);
+  }
+  return gasSum/gasSumCount;
 }
-

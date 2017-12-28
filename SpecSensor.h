@@ -1,15 +1,18 @@
-#include <Arduino.h>
-class SpecSensor
+#include "Sensor.h"
+
+#ifndef SpecSensor_h
+#define SpecSensor_h
+
+class SpecSensor:public Sensor
 {
 public:
   double getGas();
-  void updateData();
-  SpecSensor(int, double, double);
+  SpecSensor(int);
 private:
   int pin;
-  double m;
-  double ref;
+  double next;
   double gasSum;
-  long gasSumCount;
+  int gasSumCount;
 };
 
+#endif

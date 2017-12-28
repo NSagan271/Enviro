@@ -3,48 +3,42 @@
 #include <SoftwareSerial.h>
 
 #include "SpecSensor.h"
-//REMEMBER TO CHANGE URL FROM SPEC TO ENVIRO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
-#define SPEC 5
+#include "CO2.h"
+#include "Dust.h"
+
+#define SENSORS 5
 //Number of samples over a certain time period
-#define TIMES 80
-#define PERIOD 5000
-#define OUT_TO_V 5.03/1023
+#define OUT_TO_V 5.03/1023 //conversion factor: analog output to volts
 
-#define O3AVG 1.677501
-#define SO2AVG 1.799569565
-#define COAVG 1.676456522
-#define NO2AVG 1.56315
+#define O3INDEX 0
+#define SO2INDEX 1
+#define COINDEX 2
+#define NO2INDEX 3
+#define CO2INDEX 4
+#define DUSTINDEX 5
 
-SpecSensor o3(A0, -7.2355E-3, O3AVG);
-SpecSensor so2(A3, 4.059E-3, SO2AVG);
-SpecSensor co(A4, 5.42E-4, COAVG);
-SpecSensor no2(A5, -2.2345E-2, NO2AVG);
-SpecSensor test(A1, 1, 1 );
+//sensors
+SpecSensor o3(A0);
+SpecSensor so2(A3);
+SpecSensor co(A4);
+SpecSensor no2(A5);
+CO2 co2;
+//Dust dust = Dust(A2, 8);
 
-SpecSensor *s[SPEC] = {&o3, &so2, &co, &no2, &test};
+Sensor *s[SENSORS] = {&o3, &so2, &co, &no2, &co2/*, &dust*/};
 
-#define DUST A2
-#define DUST_LED_POW 8
+//gas sensor values
+double data[SENSORS];//same order as the sensor array
 
-#define DUST_DELAY1 280
-#define DUST_DELAY2 40
-#define DUST_OFF 9680
-
-double dust = 0;
-double no2Gas;
-double so2Gas;
-double o3Gas;
-double coGas;
-
+//FONA: communication through cellular network to the server
 SoftwareSerial fona(13,12);
-void setup() {
-  pinMode (DUST_LED_POW,OUTPUT);
-  pinMode (DUST,INPUT);
-  fona.begin(9600);
-  // put your setup code here, to run once:
-  
+void setup() {//set up sensors and FONA
+  //fona.begin(9600);
+  Serial.begin(9600);
+  while(!Serial);
+  co2.init();
   delay(2000);
-  fona.println("AT");
+  /*fona.println("AT");
   waitForOk();
   
   fona.println(F("AT+CGACT=1,1"));
@@ -55,14 +49,14 @@ void setup() {
   waitForOk();
   fona.println(F("AT+HTTPINIT"));
   waitForOk();
-  fona.println(F("AT+HTTPPARA=\"URL\",\"http://spec-nsagan271.c9users.io/d\""));
+  fona.println(F("AT+HTTPPARA=\"URL\",\"http://enviro-nsagan271.c9users.io/d\""));
   waitForOk();
   fona.println(F("AT+HTTPPARA=\"CONTENT\",\"application/json\""));
   waitForOk();
   fona.println(F("AT+HTTPPARA=\"CID\",1"));
   waitForOk();
   fona.println("AT+HTTPINIT");
-  waitForOk();
+  waitForOk();*/
 
 }
 
@@ -75,36 +69,13 @@ byte i;
 double x[4];
 double y;
 void loop() {
-  for(int i = 0; i < TIMES; i++){
-    for (int j = 0; j < SPEC; j++){
-      s[j]->updateData();
-    }
-    delay(PERIOD/TIMES);
+  for (int i = 0; i < SENSORS; i++){
+    data[i] = s[i]->getGas();
   }
-  dust = getDust();
-  o3Gas = o3.getGas();
-  //x[0] = o3Gas/O3AVG;
-  no2Gas = no2.getGas();
-  //x[1] = no2Gas/NO2AVG;
-  so2Gas = so2.getGas();
-  //x[2] = so2Gas/SO2AVG;
-  coGas = co.getGas();
-  //x[3] = coGas/COAVG;
-
-  //y = (x[0]+x[3])/2;
-  //   
-  /*o3Gas = (x[0]/(y)-1)*O3AVG/-7.2355E-3;
-  if (o3Gas < 0) o3Gas = 0;
-  no2Gas = (x[1]/(y)-1)*NO2AVG/-2.2345E-2;
-  if (no2Gas < 0) no2Gas = 0;
-  so2Gas = (x[2]/(y)-1)*SO2AVG/ 4.059E-3;
-  if (so2Gas < 0) so2Gas = 0;
-  coGas = (x[3]/(y)-1)*COAVG/5.42E-4;
-  if (coGas < 0) coGas = 0;*/
-  
-  fonaLog();
+  //fonaLog();
+  serialPrint();
 }
-void fonaLog(){
+void fonaLog(){//log data to the server
   
   if(lastTimeAdjust == 0 || now() - lastTimeAdjust >= SECS_PER_HOUR){
     fona.println(F("AT+CIPGSMLOC=2,1"));
@@ -144,7 +115,7 @@ void fonaLog(){
   len = 0;
   
   
-  fona.print(F("{\"document\":{\"location\":\"blc\",\"time\":"));
+  fona.print(F("{\"document\":{\"location\":\"test\",\"time\":"));
   fona.print(now());
   fona.print(F(",\"sensor\":{\"temp\":"));
   fona.print(0);
@@ -153,19 +124,17 @@ void fonaLog(){
   fona.print(F(",\"barometer\":"));
   fona.print(0);
   fona.print(F(",\"co\":"));
-  fona.print(coGas,4);
+  fona.print(data[COINDEX],4);
   fona.print(F(",\"co2\":"));
-  fona.print(0);
+  fona.print(data[CO2INDEX]);
   fona.print(F(",\"dust\":"));
-  fona.print(dust);
+  fona.print(data[DUSTINDEX]);
   fona.print(F(",\"no2\":"));
-  fona.print(no2Gas,4);
+  fona.print(data[NO2INDEX],4);
   fona.print(F(",\"o3\":"));
-  fona.print(o3Gas,4);
+  fona.print(data[O3INDEX],4);
   fona.print(F(",\"so2\":"));
-  fona.print(so2Gas,4);
-  fona.print(F(",\"test\":"));
-  fona.print(test.getGas(),4);
+  fona.print(data[SO2INDEX],4);
   fona.println(F("}}}"));
 
   waitForOk();
@@ -181,17 +150,28 @@ void waitForOk(){
   }
   len = 0;
 }
-double getDust(){
-  double d = 0.0;
-  int count = 0;
-  while(count<TIMES){
-    digitalWrite(DUST_LED_POW,LOW);
-    delayMicroseconds(DUST_DELAY1);
-    d += ((analogRead(DUST)*OUT_TO_V)-.1)/.05;
-    delayMicroseconds(DUST_DELAY2);
-    digitalWrite(DUST_LED_POW,HIGH);
-    delay(62.5);
-    count++;
-  }
-  return d/count;
+
+void serialPrint(){
+  Serial.print(F("{\"document\":{\"location\":\"test\",\"time\":"));
+  Serial.print(now());
+  Serial.print(F(",\"sensor\":{\"temp\":"));
+  Serial.print(0);
+  Serial.print(F(",\"humid\":"));
+  Serial.print(0);
+  Serial.print(F(",\"barometer\":"));
+  Serial.print(0);
+  Serial.print(F(",\"co\":"));
+  Serial.print(data[COINDEX],4);
+  Serial.print(F(",\"co2\":"));
+  Serial.print(data[CO2INDEX]);
+  Serial.print(F(",\"dust\":"));
+  //Serial.print(data[DUSTINDEX]);
+  Serial.print(F(",\"no2\":"));
+  Serial.print(data[NO2INDEX],4);
+  Serial.print(F(",\"o3\":"));
+  Serial.print(data[O3INDEX],4);
+  Serial.print(F(",\"so2\":"));
+  Serial.print(data[SO2INDEX],4);
+  Serial.println(F("}}}"));
 }
+
