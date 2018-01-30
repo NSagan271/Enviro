@@ -1,18 +1,22 @@
 #include "Sensor.h"
+#include <SoftwareSerial.h>
 
-#ifndef SpecSensor_h
-#define SpecSensor_h
+#ifndef CO_h
+#define CO_h
 
 class SpecSensor:public Sensor
 {
 public:
-  double getGas();
-  SpecSensor(int);
+  SpecSensor(int, int);
+  unsigned int getData();
+  void init();
 private:
-  int pin;
-  double next;
-  double gasSum;
-  int gasSumCount;
+  byte out[25];
+  int len;
+  unsigned int result;
+  int start;
+  int value1;
+  int value2;
 };
 
 #endif

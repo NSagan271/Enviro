@@ -6,7 +6,8 @@
 class Sensor
 {
 public:
-  virtual double getGas() = 0;
+  virtual unsigned int getData() = 0;
+  virtual void init() = 0;
 };
 
 #endif

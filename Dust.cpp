@@ -11,16 +11,18 @@ Dust::Dust(int pin, int ledPow){
   sum = 0;
   this->pin = pin;
   this->ledPow = ledPow;
+}
+void Dust::init(){
   pinMode(pin,INPUT);
   pinMode(ledPow, OUTPUT);
 }
-double Dust::getGas(){
-  sum = 0.0;
+unsigned int Dust::getData(){
+  sum = 0;
   count = 0;
   while(count<TIMES){
     digitalWrite(ledPow,LOW);
     delayMicroseconds(DELAY1);
-    sum += ((analogRead(pin)*OUT_TO_V)-.1)/.05;
+    sum += ((analogRead(pin)*OUT_TO_V)-.1)*500/3.6;
     delayMicroseconds(DELAY2);
     digitalWrite(ledPow,HIGH);
     delay(62.5);

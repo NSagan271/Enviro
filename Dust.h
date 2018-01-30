@@ -6,12 +6,13 @@
 class Dust: public Sensor
 {
 public:
-  double getGas();
+  unsigned int getData();
   Dust(int,int);
+  void init();
 private:
   int pin;
   int ledPow;
-  double sum;
+  int sum;
   int count;
 };
 

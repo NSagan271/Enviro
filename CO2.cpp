@@ -1,21 +1,20 @@
 #include "CO2.h"
-#define RX 2
-#define TX 3
 #define SIZE 9
-#define IND 2
+#define INDEX 2
 #define MAXTIME 30
 
-SoftwareSerial sensor(RX,TX);
+CO2::CO2(int rx,int tx):sensor(rx,tx){} 
 void CO2::init(){
   sensor.begin(9600);
 }
-double CO2::getGas(){
+unsigned int CO2::getData(){
    cmd_timeout = 0;
+   sensor.listen();
    
    while(sensor.available() == 0){
       sensor.write(command, SIZE);
       cmd_timeout++;
-      if (cmd_timeout > MAXTIME) return -203;
+      if (cmd_timeout > MAXTIME) return 0;
       delay(130);
    }
    
@@ -29,13 +28,11 @@ double CO2::getGas(){
       for (int i = 0; i < SIZE; i ++){
         packet[i] = sensor.read();
       }
-      return 256*(packet[IND]) + packet[IND+1];
+      return 256*(packet[INDEX]) + packet[INDEX+1];
    }
-   int val = -300;
    while(sensor.available()>0){
-      val++;
       sensor.read();
    }
-   return val;
+   return 0;
    
 }
