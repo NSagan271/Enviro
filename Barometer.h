@@ -1,27 +1,20 @@
+#include <Adafruit_BMP280.h>
+
 // Code by Jiahao Kuang
-#include "SFE_BMP180.h"
-#include "Sensor.h"
+#include <Wire.h>
 
 #ifndef Barometer_h
 #define Barometer_h
 
-class Barometer: public Sensor
+class Barometer
 {
 public:
-  double pressure;
-
-//  set p0 to local air pressure to get a better reading,
-//  leave as -1 to let sensor take the inital pressure 
-//  reading as the base height.
-  double p0 = -1;
-  void initSensor();
-  void updateData();
+  float getData();
+  void init();
 private:
-  SFE_BMP180 barometer;
-  
+  Adafruit_BMP280 barometer;
 };
 
 
 #endif
-
 

@@ -1,10 +1,8 @@
 // Code by Brent Luker
 #include "TempHumid.h"
-#include <Wire.h>
-#include <Arduino.h>
 #define ADDRESS 0x27
 
-void TempHumid::initSensor(){
+void TempHumid::init(){
   Wire.begin();
 }
 
@@ -16,11 +14,15 @@ void TempHumid::updateData(){
   // Request read
   Wire.beginTransmission(ADDRESS);
   Wire.endTransmission();
+  delay(100);
 
   // If we didn't get 4 bytes from the sensor....
-  if(Wire.requestFrom((byte) ADDRESS, (byte) 4) != 4){
-    status = 4; // temp and humidity will be unchanged. Use our own error status.
-    return;
+  Wire.requestFrom( (int) ADDRESS, (int) 4);
+  int timeout = 0;
+  while (Wire.available() < 4){
+    timeout++;
+    delay(50);
+    if(timeout > 20)return;
   }
 
   humHigh  = Wire.read();
@@ -36,9 +38,16 @@ void TempHumid::updateData(){
   //    invalid
   
   // Status is the top two bits of the high humidity byte
+  Wire.endTransmission();
   status = (humHigh >> 6) & 0x03;
-  if(status == 3) return; // temp and humidity will be unchanged
-
+  if(status == 3){
+    return; // temp and humidity will be unchanged
+  }
+  if (status == 1){
+    temp = 0;
+    humidity = 0;
+    return;
+  }
   // Keep the rest
   humHigh = humHigh & 0x3f;
 
@@ -46,12 +55,10 @@ void TempHumid::updateData(){
   humData  = humHigh  << 8 | humLow;
   tempData = tempHigh << 8 | tempLow;
 
-  // The bottom two bits of the low temp byte are invalid, so we'll remove
-  // those
+  // The bottom two bits of the low temp byte are invalid, so we'll remove those
   tempData = tempData >> 2;
 
-  // Convert to floating point and save
-  humidity = (float) humData * 6.10e-3; // 100 / (2^14 - 1)
-  temp = (float) tempData * 1.007e-2 - 40.0; // 165 / (2^14 - 1)
+  humidity = humData * 6.10e-3; // 100 / (2^14 - 1)
+  temp = tempData * 1.007e-2 - 40.0; // 165 / (2^14 - 1)
 }
 
