@@ -31,6 +31,29 @@ void OLED::wait(){
   SeeedOled.setTextXY(7,0);
   SeeedOled.putString("patient.");
 }
+
+void OLED::longwait(){
+  SeeedOled.clearDisplay();
+  SeeedOled.setTextXY(0,0);
+  SeeedOled.putString("Waiting for the");
+  
+  SeeedOled.setTextXY(1,0);
+  SeeedOled.putString("sensors to warm");
+  
+  SeeedOled.setTextXY(2,0);
+  SeeedOled.putString("up. This will");
+  
+  SeeedOled.setTextXY(3,0);
+  SeeedOled.putString("take over");
+
+  SeeedOled.setTextXY(4,0);
+  SeeedOled.putString("an hour.");
+
+  SeeedOled.setTextXY(6,0);
+  SeeedOled.putString("Please be");
+  SeeedOled.setTextXY(7,0);
+  SeeedOled.putString("patient.");
+}
 void OLED::updateValues(unsigned int temp, unsigned int humid, unsigned int baro, unsigned int co2, unsigned int co, unsigned int o3, unsigned int so2, unsigned int no2, unsigned int dust){
   SeeedOled.clearDisplay();
 

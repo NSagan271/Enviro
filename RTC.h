@@ -19,6 +19,7 @@ private:
   int m;
   int s;
   unsigned long temp;
+  unsigned long temp2;
   char mon[4];
   int ii;
   byte bcdToDec(byte);
