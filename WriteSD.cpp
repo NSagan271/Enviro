@@ -1,7 +1,7 @@
 #include "WriteSD.h"
 
-#define RESET 11
-SoftwareSerial logger(8,9);
+#define RESET 9
+SoftwareSerial logger(10,11);
 
 void WriteSD::init(){
   pinMode(RESET, OUTPUT);
@@ -114,7 +114,7 @@ void WriteSD::setUpFile(char filename[12]){
     }
   }
   //start writing to the file
-  logger.print("append ");
+  logger.print(F("append "));
   logger.print(filename);
   logger.write(13); //This is \r
 

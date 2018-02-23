@@ -8,6 +8,7 @@ class OLED
 {
 public:
   void wait(); 
+  void longwait(); 
   void updateValues(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
   void init();
 };

@@ -4,8 +4,8 @@
 #define DELAY2 40
 #define OFF 9680
 
-#define TIMES 80
-#define OUT_TO_V 5.03/1023
+#define TIMES 20
+#define OUT_TO_V 5.0/1023
 
 Dust::Dust(int pin, int ledPow){
   sum = 0;
@@ -22,7 +22,7 @@ unsigned int Dust::getData(){
   while(count<TIMES){
     digitalWrite(ledPow,LOW);
     delayMicroseconds(DELAY1);
-    sum += ((analogRead(pin)*OUT_TO_V)-.1)*500/3.6;
+    sum += (((analogRead(pin)*OUT_TO_V)-.1)*500/3.6);
     delayMicroseconds(DELAY2);
     digitalWrite(ledPow,HIGH);
     delay(62.5);

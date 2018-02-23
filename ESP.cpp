@@ -7,7 +7,7 @@
  * 
  * 
  * */
-#define SSID "CBCI-839D-2.4"
+#define SSID "TTKM4MAG-2.4G"
 #define PASS "cactus7723creak"
 
 /*
@@ -19,17 +19,22 @@
  * */
 #define LOC_SHORT "test"
 #define LOCATION "Test Trial"
+#define DEVICE_NAME "Test Device 1"
 
 
-#define DATA1 "{"
-
-#define REQ1 "POST /api/v1.6/devices/my-data-source/?token=A1E-KXjQUlToQLatgi7E1MU3fKIvPty3pC HTTP/1.1\r\nHost: "
+//#define DATA1 "{"
+#define DATA1 "{\"document\":{\"location\":{\"name\":{\"long\":\""
+#define DATA2 "\",\"short\":\""
+#define DATA3 "\"}},\"name\":\""
+//#define REQ1 "POST /api/v1.6/devices/my-data-source/?token=A1E-KXjQUlToQLatgi7E1MU3fKIvPty3pC HTTP/1.1\r\nHost: "
+#define REQ1 "POST /d HTTP/1.1\r\nHost: "
 #define REQ2 "\r\nAccept:*/*\r\nContent-Length: "
 #define REQ3 "\r\nContent-Type: application/json\r\n\r\n"
 #define REQ4 "\r\nConnection: close\r\n"
 
 
-#define URL "things.ubidots.com"
+//#define URL "things.ubidots.com"
+#define URL "https://enviro-nsagan271.c9users.io"
 SoftwareSerial esp(12,13);
 
 void ESP::init(){
@@ -74,13 +79,15 @@ void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsign
   esp.print(dataL);
   esp.print(REQ3);
   esp.print(DATA1);
-  //esp.print(LOC_SHORT);
-  //esp.print(F("\",\"name\":\""));
-  //esp.print(LOCATION);
-  //esp.print(F("\",\"time\":"));
-  //esp.print(timestamp);
-  //esp.print(F(",\"sensor\":{\"temp\":"));
-  esp.print(F("\"temp\":"));
+  esp.print(LOCATION);
+  esp.print(DATA2);
+  esp.print(LOC_SHORT);
+  esp.print(DATA3);
+  esp.print(DEVICE_NAME);
+  esp.print(F("\",\"time\":"));
+  esp.print(timestamp);
+  esp.print(F(",\"sensor\":{\"temp\":"));
+  //esp.print(F("\"temp\":"));
   esp.print(temp);
   esp.print(F(",\"humid\":"));
   esp.print(humid);
@@ -98,12 +105,12 @@ void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsign
   esp.print(o3);
   esp.print(F(",\"so2\":"));
   esp.print(so2);
-  //esp.print(F("}}}"));
-  esp.print(F("}"));
+  esp.print(F("}}}"));
+  //esp.print(F("}"));
   esp.println(REQ4);
   esp.println(F("\r\n\r\n\r\n\r\n"));
 
-   Serial.print(REQ1);
+   /*Serial.print(REQ1);
   Serial.print(URL);
   Serial.print(REQ2);
   Serial.print(dataL);
@@ -136,12 +143,12 @@ void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsign
   //esp.print(F("}}}"));
   Serial.print(F("}"));
   Serial.println(REQ4);
-  Serial.println(F("\r\n\r\n\r\n\r\n"));
+  Serial.println(F("\r\n\r\n\r\n\r\n"));*/
   waitForClosed(600);
 }
 
 int ESP::dataLen(float temp, float humid,float baro, unsigned int co2, unsigned int co, unsigned int o3, unsigned int so2, unsigned int no2, unsigned int dust, time_t timestamp){
-  return sizeof(DATA1)/sizeof(DATA1[0]) /*+ sizeof(LOC_SHORT)/sizeof(LOC_SHORT[0]) + 10 + sizeof(LOCATION)/sizeof(LOCATION[0]) + 9 + numChar((int)timestamp)*/ +  /*18*/6 + (numChar((int)temp)+3) + 9 + (numChar((int)humid)+3) + 13 + (numChar((int)baro)+3) + 6 + numChar(co) + 7 + numChar(co2) + 8 + numChar(dust) + 7 + numChar(no2) + 6 + numChar(o3) + 7 + numChar(so2) + /*3*/1; 
+  return sizeof(DATA1)/sizeof(DATA1[0]) + sizeof(LOC_SHORT)/sizeof(LOC_SHORT[0]) + sizeof(DATA2)/sizeof(DATA2[0]) + sizeof(LOCATION)/sizeof(LOCATION[0]) + sizeof(DATA3)/sizeof(DATA3[0])+ sizeof(DEVICE_NAME)/sizeof(DEVICE_NAME[0])+ 9 + numChar((int)timestamp) +  18 + (numChar((int)temp)+3) + 9 + (numChar((int)humid)+3) + 13 + (numChar((int)baro)+3) + 6 + numChar(co) + 7 + numChar(co2) + 8 + numChar(dust) + 7 + numChar(no2) + 6 + numChar(o3) + 7 + numChar(so2) + 3; 
 }
 
 int ESP::reqLen(int dataLength){
@@ -172,7 +179,7 @@ bool ESP::waitForOK(int timeout){
       out[len] = esp.read();
       Serial.write(out[len]);
       len++;
-      if (len >= 255){
+      if (len >= 15){
         for (int i = 5; i > 0; i--)
           out[5-i] = out[len-i];
         len = 5;
@@ -194,10 +201,10 @@ void ESP::waitForClosed(int timeout){
       out[len] = esp.read();
       Serial.write(out[len]);
       len++;
-      if (len >= 255){
-        for (int i = 5; i > 0; i--)
-          out[5-i] = out[len-i];
-        len = 5;
+      if (len >= 15){
+        for (int i = 6; i > 0; i--)
+          out[6-i] = out[len-i];
+        len = 6;
       }
     }
     delay(10);

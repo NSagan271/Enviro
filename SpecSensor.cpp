@@ -1,8 +1,8 @@
 #include "SpecSensor.h"
 
 #define SERIALNUM_LEN 12
-#define S1 6
-#define S2 7
+#define S1 2
+#define S2 3
 
 SoftwareSerial sensor(4,5);
 SpecSensor::SpecSensor(int value1, int value2){
@@ -41,7 +41,7 @@ unsigned int SpecSensor::getData(){
   //Serial.println("Read data");
   start = (SERIALNUM_LEN + 2);
   while (start < len && out[start] != ','){
-    if (out[start] == '-')return 0; //you can't have negative PPM!
+    if (out[start] == '-')return 0; //you can't have negative PPB!
     result = result*10 + ((int)(out[start]) - '0');
     start++;
   }

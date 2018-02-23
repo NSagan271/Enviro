@@ -17,7 +17,7 @@ private:
   void setBaudRate();
   bool waitForOK(int);
   void waitForClosed(int);
-  byte out[255];
+  byte out[15];
   int len;
   int count;
   int dataLen(float, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, time_t);

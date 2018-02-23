@@ -1,3 +1,23 @@
+/*
+ * SET "LONGSTARTUP" TO TRUE IF THE DEVICE HAS BEEN W/O
+ * POWER FOR SEVERAL DAYS OR LONGER!!
+ * 
+ * 
+ * IT WILL TAKE OVER AN HOUR FOR
+ * THE SENSORS TO WARM UP.
+ * 
+ */
+#define LONGSTARTUP false
+/*
+ * 
+ * MAKE SURE YOU EDIT:
+ * ESP.cpp:
+ * WIFI username and password
+ * Device location and name
+ * 
+ * 
+ */
+
 #include "Sensor.h"
 #include "SpecSensor.h"
 #include "CO2.h"
@@ -22,13 +42,13 @@
 
 //sensors
 Barometer baro;
-CO2 co2(2,3);
+CO2 co2(6,7);
 SpecSensor o3(HIGH,HIGH);
-SpecSensor so2(LOW,HIGH);
+SpecSensor so2(HIGH,LOW);
 SpecSensor co(LOW,LOW);
-SpecSensor no2(HIGH,LOW);
+SpecSensor no2(LOW,HIGH);
 
-Dust dust(A0, 10);
+Dust dust(A0, 8);
 
 Sensor *s[SENSORS] = {&o3, &co, &so2, &no2, &co2, &dust};
 
@@ -66,7 +86,8 @@ void setup() {//set up sensors and FONA
   Serial.println(F("SD"));
   wifi.init();
   delay(2000);
-  sensorWarmUp();
+  //if (LONGSTARTUP) longWarmUp();
+  //else sensorWarmUp();
 }
 
 
@@ -97,6 +118,13 @@ void sensorWarmUp(){
   for (int i = 0; i < 10; i++){
     collectData();
     delay(2000);
+  }
+}
+void longWarmUp(){
+  screen.longwait();
+  for (int i = 0; i < 60; i++){
+    collectData();
+    delay(60000);
   }
 }
 
