@@ -86,8 +86,8 @@ void setup() {//set up sensors and FONA
   Serial.println(F("SD"));
   wifi.init();
   delay(2000);
-  //if (LONGSTARTUP) longWarmUp();
-  //else sensorWarmUp();
+  if (LONGSTARTUP) longWarmUp();
+  else sensorWarmUp();
 }
 
 
