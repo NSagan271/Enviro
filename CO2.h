@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include "Sensor.h"
 #include <SoftwareSerial.h>
 
@@ -8,7 +9,7 @@ class CO2: public Sensor
 {
 public:
   CO2(int, int);
-  unsigned int getData();
+  int getData();
   void init();
 private:
   byte command[9] = {0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79};;

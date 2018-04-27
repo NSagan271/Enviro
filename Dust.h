@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include "Sensor.h"
 
 #ifndef Dust_h
@@ -6,7 +7,7 @@
 class Dust: public Sensor
 {
 public:
-  unsigned int getData();
+  int getData();
   Dust(int,int);
   void init();
 private:

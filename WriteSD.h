@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <TimeLib.h>
@@ -8,11 +9,12 @@
 class WriteSD
 {
   public:
-    void init();
-    void writeData(float, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, time_t);
-    void setUpFile(char[12]);
+    void init(int, int, int);
+    void writeData(float, float, float, int, int, int, int, int,  int, int, int, int, int, int, int);
+    void setUpFile(int, int, int);
   private:
     int timeout = 0;
+    void commandMode();
 };
 
 #endif

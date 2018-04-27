@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include "Dust.h"
 
 #define DELAY1 280
@@ -16,7 +17,7 @@ void Dust::init(){
   pinMode(pin,INPUT);
   pinMode(ledPow, OUTPUT);
 }
-unsigned int Dust::getData(){
+int Dust::getData(){
   sum = 0;
   count = 0;
   while(count<TIMES){
@@ -25,7 +26,7 @@ unsigned int Dust::getData(){
     sum += (((analogRead(pin)*OUT_TO_V)-.1)*500/3.6);
     delayMicroseconds(DELAY2);
     digitalWrite(ledPow,HIGH);
-    delay(62.5);
+    delay(40);
     count++;
   }
   return sum/count;

@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include <Wire.h>
 #include <SeeedOLED.h>
 
@@ -9,7 +10,7 @@ class OLED
 public:
   void wait(); 
   void longwait(); 
-  void updateValues(unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+  void updateValues(int, int, int, int, int, int, int, int, int);
   void init();
 };
 

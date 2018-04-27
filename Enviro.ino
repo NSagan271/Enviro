@@ -1,3 +1,5 @@
+
+//code by Brent Luker and Naomi Sagan
 /*
  * SET "LONGSTARTUP" TO TRUE IF THE DEVICE HAS BEEN W/O
  * POWER FOR SEVERAL DAYS OR LONGER!!
@@ -64,14 +66,14 @@ ESP wifi;
 //Realtime clock
 RTC rtc;
 //gas sensor values
-unsigned int data[SENSORS];
+int data[SENSORS];
 
 OLED screen;
 WriteSD sd;
 
 void setup() {//set up sensors and FONA
-  Serial.begin(57600);
-
+  Serial.begin(9600);
+  baro.init();
   rtc.init();
   if (Serial) rtc.setTime();
   screen.init();
@@ -82,7 +84,7 @@ void setup() {//set up sensors and FONA
   }
   th.init();
   Serial.println(F("TH"));
-  sd.init();
+  sd.init(rtc.getDay(), rtc.getMonth(), rtc.getYear());
   Serial.println(F("SD"));
   wifi.init();
   delay(2000);
@@ -96,9 +98,9 @@ void loop() {
   Serial.println(F("Updated"));
   screen.updateValues((int)temp, (int)humid, (int)pressure, data[CO2INDEX], data[COINDEX], data[O3INDEX], data[SO2INDEX], data[NO2INDEX], data[DUSTINDEX]);
   Serial.println(F("Screen"));
-  sd.writeData(temp, humid, pressure, data[CO2INDEX], data[COINDEX], data[O3INDEX], data[SO2INDEX], data[NO2INDEX], data[DUSTINDEX], rtc.getTimestamp());
-  Serial.println(F("SD"));
   wifi.postData(temp, humid, pressure, data[CO2INDEX], data[COINDEX], data[O3INDEX], data[SO2INDEX], data[NO2INDEX], data[DUSTINDEX], rtc.getTimestamp());
+  sd.writeData(temp, humid, pressure, data[CO2INDEX], data[COINDEX], data[O3INDEX], data[SO2INDEX], data[NO2INDEX], data[DUSTINDEX], rtc.getHour(), rtc.getMinute(), rtc.getSecond(), rtc.getDay(), rtc.getMonth(), rtc.getYear());
+  Serial.println(F("SD"));
 }
 
 void collectData(){
@@ -117,7 +119,7 @@ void sensorWarmUp(){
   screen.wait();
   for (int i = 0; i < 10; i++){
     collectData();
-    delay(2000);
+    delay(5000);
   }
 }
 void longWarmUp(){

@@ -1,9 +1,21 @@
+//code by Naomi Sagan
+
 #include "WriteSD.h"
+
+/*
+ * 
+ * DEFINE YOUR LOCATION NAME
+ * 
+ * 
+ */
+#define LOC "Thaler"
+
+#define TYPE ".csv"
 
 #define RESET 9
 SoftwareSerial logger(10,11);
 
-void WriteSD::init(){
+void WriteSD::init(int day, int mo, int yr){
   pinMode(RESET, OUTPUT);
   logger.begin(9600);
   //Reset OpenLog
@@ -14,15 +26,12 @@ void WriteSD::init(){
   digitalWrite(RESET, HIGH);
   delay(1000);
 
-  //go into command mode
-  logger.write(26);
-  logger.write(26);
-  logger.write(26);
-
+ commandMode();
   
-  
-  //Wait for OpenLog to respond with '>' to indicate we are in command mode
+  //make directory DATA if it doesn't already exist
   timeout = 0;
+  logger.print(F("md DATA"));
+  logger.write(13);
   while(1) {
     delay(100);
     timeout++;
@@ -30,34 +39,51 @@ void WriteSD::init(){
     if(logger.available())
       if(logger.read() == '>') break;
   }
-  
-  //make directory AirQ if it doesn't already exist
-  logger.print(F("md AirQ"));
+
+
+  //go to directory DATA
+  timeout = 0;
+  logger.print(F("cd DATA"));
   logger.write(13);
   while(1) {
     delay(100);
+    timeout++;
+    if (timeout > 100) return;
     if(logger.available())
       if(logger.read() == '>') break;
   }
-
-
-  //go to directory AirQ
-  logger.write(13);
-  while(1) {
-    delay(100);
-    if(logger.available())
-      if(logger.read() == '>') break;
-  }
-
-  
-  setUpFile("test.csv");
+  setUpFile(day, mo, yr);
 }
 
-void WriteSD::writeData(float temp, float humid, float baro, unsigned int co2, unsigned int co, unsigned int o3, unsigned int so2, unsigned int no2, unsigned int dust, time_t t){
+void WriteSD::writeData(float temp, float humid, float baro, int co2, int co, int o3, int so2, int no2, int dust, int hr, int min, int sec, int day, int mo, int yr){
   logger.listen();
- 
-  logger.print(F("Test, "));
-  logger.print(t);
+
+  commandMode();
+  setUpFile(day, mo, yr);
+  
+  logger.print(LOC);
+  logger.print(F(", "));
+  
+  logger.print(day/10);
+  logger.print(day%10);
+  logger.print('-');
+  logger.print(mo/10);
+  logger.print(mo%10);
+  logger.print('-');
+  logger.print(yr/10);
+  logger.print(yr%10);
+  
+  logger.print(F(" "));
+  
+  logger.print(hr/10);
+  logger.print(hr%10);
+  logger.print(':');
+  logger.print(min/10);
+  logger.print(min%10);
+  logger.print(':');
+  logger.print(sec/10);
+  logger.print(sec%10);
+
   logger.print(F(" ,"));
   logger.print(temp);
   logger.print(F(" ,"));
@@ -76,14 +102,44 @@ void WriteSD::writeData(float temp, float humid, float baro, unsigned int co2, u
   logger.print(o3);
   logger.print(F(" ,"));
   logger.println(so2);
+  
 }
 
-void WriteSD::setUpFile(char filename[12]){
+void WriteSD::commandMode(){
+  //go into command mode
+  logger.write(26);
+  logger.write(26);
+  logger.write(26);
+
   
-   boolean newfile = false;
+  
+  //Wait for OpenLog to respond with '>' to indicate we are in command mode
+  timeout = 0;
+  while(1) {
+    delay(100);
+    timeout++;
+    if (timeout > 100) return;
+    if(logger.available())
+      if(logger.read() == '>'){
+        Serial.println(F("In command mode"));
+        break;
+      }
+  }
+}
+
+void WriteSD::setUpFile(int day, int mo, int yr){
+  boolean newfile = false;
   //See if [filename] exists
   logger.print(F("size "));
-  logger.print(filename);
+  logger.print(day/10);
+  logger.print(day%10);
+  logger.print('-');
+  logger.print(mo/10);
+  logger.print(mo%10);
+  logger.print('-');
+  logger.print(yr/10);
+  logger.print(yr%10);
+  logger.print(TYPE);
   logger.write(13);
 
   while(1) {
@@ -101,7 +157,15 @@ void WriteSD::setUpFile(char filename[12]){
 
   if (newfile){
     logger.print(F("new "));
-    logger.print(filename);
+    logger.print(day/10);
+    logger.print(day%10);
+    logger.print('-');
+    logger.print(mo/10);
+    logger.print(mo%10);
+    logger.print('-');
+    logger.print(yr/10);
+    logger.print(yr%10);
+    logger.print(TYPE);
     logger.write(13);
     delay(100);
     
@@ -115,12 +179,23 @@ void WriteSD::setUpFile(char filename[12]){
   }
   //start writing to the file
   logger.print(F("append "));
-  logger.print(filename);
+  logger.print(day/10);
+  logger.print(day%10);
+  logger.print('-');
+  logger.print(mo/10);
+  logger.print(mo%10);
+  logger.print('-');
+  logger.print(yr/10);
+  logger.print(yr%10);
+  logger.print(TYPE);
   logger.write(13); //This is \r
 
   //Wait for OpenLog to indicate file is open and ready for writing
+  timeout = 0;
   while(1) {
     delay(100);
+    timeout++;
+    if (timeout > 100) return;
     if(logger.available())
       if(logger.read() == '<') break;
   }

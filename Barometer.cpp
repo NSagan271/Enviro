@@ -1,3 +1,4 @@
+// Code by Jiahao Kuang
 #include "Barometer.h"
 
 void Barometer::init(){
@@ -5,6 +6,6 @@ void Barometer::init(){
 }
 
 float Barometer::getData(){
-  return barometer.readPressure()/100;
+  return barometer.readPressure()/100.0;
 }
 

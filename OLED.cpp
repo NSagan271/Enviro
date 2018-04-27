@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include "OLED.h"
 
 void OLED::init(){
@@ -54,7 +55,7 @@ void OLED::longwait(){
   SeeedOled.setTextXY(7,0);
   SeeedOled.putString("patient.");
 }
-void OLED::updateValues(unsigned int temp, unsigned int humid, unsigned int baro, unsigned int co2, unsigned int co, unsigned int o3, unsigned int so2, unsigned int no2, unsigned int dust){
+void OLED::updateValues(int temp, int humid, int baro, int co2, int co, int o3, int so2, int no2, int dust){
   SeeedOled.clearDisplay();
 
   SeeedOled.setTextXY(0,0);

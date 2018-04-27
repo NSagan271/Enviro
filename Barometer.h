@@ -1,6 +1,7 @@
+// Code by Jiahao Kuang
 #include <Adafruit_BMP280.h>
 
-// Code by Jiahao Kuang
+
 #include <Wire.h>
 
 #ifndef Barometer_h

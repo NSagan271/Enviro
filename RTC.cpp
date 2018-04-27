@@ -1,3 +1,4 @@
+ //code by Naomi Sagan
 #include "RTC.h"
 #include <Arduino.h>
 #define ADDRESS 0x68
@@ -39,7 +40,7 @@ bool RTC::setTime(){
       hr+=TIMEZONE;
       if (hr > 23){
         da++;
-        hr += (hr%24);
+        hr = (hr%24);
         if (((yr-30)%4 == 0 && mo == 2 && da > 29) || ((yr-30)%4 >0 && mo == 2 && da>28) || (((ii < 8 && ii%2 == 1) || (ii >=8 && ii%2 == 0)) && da>31) || (((ii < 8 && ii%2 == 0) || (ii >=8 && ii%2 == 1))&& da>30)){
           mo++;
           da = 1;
@@ -106,6 +107,101 @@ unsigned long RTC::getTimestamp(){
     else temp+=(30);
   }
   return temp*24*3600+((unsigned long)(yr)*365*24*3600 + (unsigned long)(yr + 1)/4*24*3600 + (unsigned long)(da-1)*24*3600 + (unsigned long)hr*3600 + m*60 + s);
+}
+
+int RTC::getHour(){
+  Wire.beginTransmission(ADDRESS);
+  Wire.write(0x00);
+  Wire.endTransmission();
+
+  Wire.requestFrom(ADDRESS, 7);
+  Wire.read();
+  Wire.read();
+  hr = bcdToDec(Wire.read() & 0x3f);
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  return hr;
+}
+int RTC::getMinute(){
+  Wire.beginTransmission(ADDRESS);
+  Wire.write(0x00);
+  Wire.endTransmission();
+
+  Wire.requestFrom(ADDRESS, 7);
+  Wire.read();
+  m = bcdToDec(Wire.read());
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+ return m;
+}
+
+int RTC::getSecond(){
+  Wire.beginTransmission(ADDRESS);
+  Wire.write(0x00);
+  Wire.endTransmission();
+
+  Wire.requestFrom(ADDRESS, 7);
+  s = bcdToDec(Wire.read() & 0x7f);
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+ return s;
+}
+
+int RTC::getDay(){
+  Wire.beginTransmission(ADDRESS);
+  Wire.write(0x00);
+  Wire.endTransmission();
+
+  Wire.requestFrom(ADDRESS, 7);
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  da = bcdToDec(Wire.read());
+  Wire.read();
+  Wire.read();
+ return da;
+}
+
+int RTC::getMonth(){
+  Wire.beginTransmission(ADDRESS);
+  Wire.write(0x00);
+  Wire.endTransmission();
+
+  Wire.requestFrom(ADDRESS, 7);
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  mo = bcdToDec(Wire.read());
+  Wire.read();
+ return mo;
+}
+
+int RTC::getYear(){
+  Wire.beginTransmission(ADDRESS);
+  Wire.write(0x00);
+  Wire.endTransmission();
+
+  Wire.requestFrom(ADDRESS, 7);
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  Wire.read();
+  yr = bcdToDec(Wire.read());
+  return (yr +1970)%100;
 }
 
 byte RTC::bcdToDec(byte val){

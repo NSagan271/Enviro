@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include <SoftwareSerial.h>
 #include <TimeLib.h>
 #include <Arduino.h>
@@ -11,8 +12,7 @@ class ESP
 {
 public:
   void init();
-  void getTime();
-  void postData(float, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, time_t);
+  void postData(float, float, float, int, int, int, int, int, int, time_t);
 private:
   void setBaudRate();
   bool waitForOK(int);
@@ -20,7 +20,7 @@ private:
   byte out[15];
   int len;
   int count;
-  int dataLen(float, float, float, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, time_t);
+  int dataLen(float, float, float, int, int,  int, int, int, int, time_t);
   int dataL;
   int numChar(int);
   int reqLen(int);

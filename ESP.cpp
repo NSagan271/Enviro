@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include "ESP.h"
 
 /*
@@ -7,19 +8,18 @@
  * 
  * 
  * */
-#define SSID "TTKM4MAG-2.4G"
-#define PASS "cactus7723creak"
-
+#define SSID "SLHS Guest"
+#define PASS "asdfgh!@"
 /*
  * 
  
  * DEFINE LOCATION NAME BELOW 
  * 
  * 
- * */
-#define LOC_SHORT "test"
-#define LOCATION "Test Trial"
-#define DEVICE_NAME "Test Device 1"
+$ * */
+#define LOC_SHORT "slhs"
+#define LOCATION "SLHS"
+#define DEVICE_NAME "Ms. Thaler"
 
 
 //#define DATA1 "{"
@@ -27,26 +27,20 @@
 #define DATA2 "\",\"short\":\""
 #define DATA3 "\"}},\"name\":\""
 //#define REQ1 "POST /api/v1.6/devices/my-data-source/?token=A1E-KXjQUlToQLatgi7E1MU3fKIvPty3pC HTTP/1.1\r\nHost: "
-#define REQ1 "POST /d HTTP/1.1\r\nHost: "
-#define REQ2 "\r\nAccept:*/*\r\nContent-Length: "
-#define REQ3 "\r\nContent-Type: application/json\r\n\r\n"
-#define REQ4 "\r\nConnection: close\r\n"
+#define REQ1 "POST /d HTTP/1.1\r\nHOST: "
+#define REQ2 "\r\ncontent-type: application/json\r\nconnection: close\r\ncontent-length: "
 
-
-//#define URL "things.ubidots.com"
-#define URL "https://enviro-nsagan271.c9users.io"
+//#define URL "enviro-nsagan271.c9users.io"
+#define URL "magnitude-aq.herokuapp.com"
 SoftwareSerial esp(12,13);
 
 void ESP::init(){
   setBaudRate();
 }
 
-void ESP::getTime(){
-  
-}
-
-void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsigned int co, unsigned int o3, unsigned int so2, unsigned int no2, unsigned int dust, time_t timestamp){
+void ESP::postData(float temp, float humid, float baro, int co2, int co, int o3, int so2, int no2, int dust, time_t timestamp){
   esp.begin(9600);
+  esp.listen();
   esp.print(F("AT\r\n"));
   waitForOK(500);
   
@@ -56,7 +50,7 @@ void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsign
   esp.print(PASS);
   esp.print(F("\"\r\n"));
   
-  waitForOK(1000);
+  waitForOK(2000);
   
   esp.print(F("AT+CIPSTART=\"TCP\",\""));
   esp.print(URL);
@@ -77,7 +71,7 @@ void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsign
   esp.print(URL);
   esp.print(REQ2);
   esp.print(dataL);
-  esp.print(REQ3);
+  esp.print("\r\n\r\n");
   esp.print(DATA1);
   esp.print(LOCATION);
   esp.print(DATA2);
@@ -106,8 +100,6 @@ void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsign
   esp.print(F(",\"so2\":"));
   esp.print(so2);
   esp.print(F("}}}"));
-  //esp.print(F("}"));
-  esp.println(REQ4);
   esp.println(F("\r\n\r\n\r\n\r\n"));
 
    /*Serial.print(REQ1);
@@ -147,12 +139,12 @@ void ESP::postData(float temp, float humid, float baro, unsigned int co2, unsign
   waitForClosed(600);
 }
 
-int ESP::dataLen(float temp, float humid,float baro, unsigned int co2, unsigned int co, unsigned int o3, unsigned int so2, unsigned int no2, unsigned int dust, time_t timestamp){
+int ESP::dataLen(float temp, float humid,float baro, int co2, int co, int o3, int so2, int no2, int dust, time_t timestamp){
   return sizeof(DATA1)/sizeof(DATA1[0]) + sizeof(LOC_SHORT)/sizeof(LOC_SHORT[0]) + sizeof(DATA2)/sizeof(DATA2[0]) + sizeof(LOCATION)/sizeof(LOCATION[0]) + sizeof(DATA3)/sizeof(DATA3[0])+ sizeof(DEVICE_NAME)/sizeof(DEVICE_NAME[0])+ 9 + numChar((int)timestamp) +  18 + (numChar((int)temp)+3) + 9 + (numChar((int)humid)+3) + 13 + (numChar((int)baro)+3) + 6 + numChar(co) + 7 + numChar(co2) + 8 + numChar(dust) + 7 + numChar(no2) + 6 + numChar(o3) + 7 + numChar(so2) + 3; 
 }
 
 int ESP::reqLen(int dataLength){
-  return sizeof(REQ1)/sizeof(REQ1[0]) + sizeof(URL)/sizeof(URL[0]) + sizeof(REQ2)/sizeof(REQ2[0]) + numChar(dataLength) + sizeof(REQ3)/sizeof(REQ3[0]) + dataLength + sizeof(REQ4)/sizeof(REQ4[0]);
+  return sizeof(REQ1)/sizeof(REQ1[0]) + sizeof(URL)/sizeof(URL[0]) + sizeof(REQ2)/sizeof(REQ2[0]) + numChar(dataLength) +4+ dataLength;
 }
 
 int ESP::numChar(int num){

@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include "CO2.h"
 #define SIZE 9
 #define INDEX 2
@@ -7,7 +8,7 @@ CO2::CO2(int rx,int tx):sensor(rx,tx){}
 void CO2::init(){
   sensor.begin(9600);
 }
-unsigned int CO2::getData(){
+int CO2::getData(){
    cmd_timeout = 0;
    sensor.listen();
    

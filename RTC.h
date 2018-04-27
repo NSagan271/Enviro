@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include <Wire.h>
 
 #ifndef RTC_h
@@ -11,6 +12,13 @@ public:
   unsigned long getTimestamp();
   void init();
   bool setTime();
+  int getHour();
+  int getMinute();
+  int getSecond();
+
+  int getMonth();
+  int getDay();
+  int getYear();
 private:
   int da;
   int yr;
@@ -24,6 +32,9 @@ private:
   int ii;
   byte bcdToDec(byte);
   byte decToBcd(byte);
+
+  char dateString[8];
+  char timeString[8];
 };
 
 

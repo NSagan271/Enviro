@@ -1,3 +1,4 @@
+//code by Naomi Sagan
 #include "Sensor.h"
 #include <SoftwareSerial.h>
 
@@ -8,12 +9,13 @@ class SpecSensor:public Sensor
 {
 public:
   SpecSensor(int, int);
-  unsigned int getData();
+  int getData();
   void init();
 private:
   byte out[25];
   int len;
-  unsigned int result;
+  long result;
+  int temp;
   int start;
   int value1;
   int value2;
