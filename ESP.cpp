@@ -9,7 +9,7 @@
  * 
  * */
 #define SSID "SLHS Guest"
-#define PASS "asdfgh!@"
+#define PASS ""
 /*
  * 
  
