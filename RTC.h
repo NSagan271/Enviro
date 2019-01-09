@@ -1,5 +1,6 @@
 //code by Naomi Sagan
 #include <Wire.h>
+#include "Constants.h"
 
 #ifndef RTC_h
 #define RTC_h

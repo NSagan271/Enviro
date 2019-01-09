@@ -142,9 +142,16 @@ void WriteSD::setUpFile(int day, int mo, int yr){
   logger.print(TYPE);
   logger.write(13);
 
+  timeout = 0;
   while(1) {
     delay(100);
+    timeout++;
+    if (timeout > 100){
+      newfile = true;
+      return;
+    }
     if(logger.available()){
+     
       //indicates that the file does not exist
       byte byteRead = logger.read();
       if(byteRead == '!'){
@@ -168,9 +175,15 @@ void WriteSD::setUpFile(int day, int mo, int yr){
     logger.print(TYPE);
     logger.write(13);
     delay(100);
-    
+
+    timeout = 0;
     while(1) {
       delay(100);
+      timeout++;
+      if (timeout > 100){
+        newfile = true;
+        return;
+      }
       if(logger.available()){
         if(logger.read() == '>') break;
       }

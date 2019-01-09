@@ -1,24 +1,5 @@
 
 //code by Brent Luker and Naomi Sagan
-/*
- * SET "LONGSTARTUP" TO TRUE IF THE DEVICE HAS BEEN W/O
- * POWER FOR SEVERAL DAYS OR LONGER!!
- * 
- * 
- * IT WILL TAKE OVER AN HOUR FOR
- * THE SENSORS TO WARM UP.
- * 
- */
-#define LONGSTARTUP false
-/*
- * 
- * MAKE SURE YOU EDIT:
- * ESP.cpp:
- * WIFI username and password
- * Device location and name
- * 
- * 
- */
 
 #include "Sensor.h"
 #include "SpecSensor.h"
@@ -30,6 +11,7 @@
 #include "WriteSD.h"
 #include "ESP.h"
 #include "RTC.h"
+#include "Constants.h"
 
 //number of sensors
 #define SENSORS 6
@@ -88,7 +70,7 @@ void setup() {//set up sensors and FONA
   Serial.println(F("SD"));
   wifi.init();
   delay(2000);
-  if (LONGSTARTUP) longWarmUp();
+  if (Constants::LONGSTARTUP) longWarmUp();
   else sensorWarmUp();
 }
 

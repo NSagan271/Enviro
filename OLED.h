@@ -1,6 +1,7 @@
 //code by Naomi Sagan
 #include <Wire.h>
 #include <SeeedOLED.h>
+#include "Constants.h"
 
 #ifndef OLED_h
 #define OLED_h

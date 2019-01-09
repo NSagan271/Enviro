@@ -2,17 +2,6 @@
 #include "RTC.h"
 #include <Arduino.h>
 #define ADDRESS 0x68
-//
-//
-//
-//
-//timezone offset
-//8 is the default: pacific standard time
-//
-//PUT 7 FOR DAYLIGHT SAVINGS TIME
-//
-//
-#define TIMEZONE 8
 
 #define USE_OFFSET true
 
@@ -37,7 +26,7 @@ bool RTC::setTime(){
     yr -= 1970; 
     
     if (USE_OFFSET){
-      hr+=TIMEZONE;
+      hr+=Constants::TIMEZONE;
       if (hr > 23){
         da++;
         hr = (hr%24);
@@ -63,7 +52,7 @@ bool RTC::setTime(){
     temp+=(da-1);
     //Serial.println(temp2);
     //Serial.println(((unsigned long)temp*24*3600+((unsigned long)(yr)*365*24*3600 + (unsigned long)(yr + 1)/4*24*3600 + (unsigned long)hr*3600 + m*60 + s )));
-    if (((unsigned long)temp*24*3600+((unsigned long)(yr)*365*24*3600 + (unsigned long)(yr + 1)/4*24*3600 + (unsigned long)hr*3600 + m*60 + s )) < temp2)return false;
+    if (!Constants::LONGSTARTUP && ((unsigned long)temp*24*3600+((unsigned long)(yr)*365*24*3600 + (unsigned long)(yr + 1)/4*24*3600 + (unsigned long)hr*3600 + m*60 + s )) < temp2)return false;
     temp += (5 + (yr-30)*365 + (yr-27)/4);
     
     Wire.beginTransmission(ADDRESS);
