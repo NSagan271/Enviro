@@ -9,8 +9,8 @@
 #include "TempHumid.h"
 #include "OLED.h"
 #include "WriteSD.h"
-#include "ESP.h"
-#include "RTC.h"
+#include "SendData.h"
+#include "Clock.h"
 #include "Constants.h"
 
 //number of sensors
@@ -43,10 +43,10 @@ float humid;
 float pressure;
 
 //WiFi module
-ESP wifi;
+SendData wifi;
 
 //Realtime clock
-RTC rtc;
+Clock rtc;
 //gas sensor values
 int data[SENSORS];
 
@@ -70,8 +70,10 @@ void setup() {//set up sensors and FONA
   Serial.println(F("SD"));
   wifi.init();
   delay(2000);
-  if (Constants::LONGSTARTUP) longWarmUp();
-  else sensorWarmUp();
+  if (!Constants::DEBUG){
+    if (Constants::LONGSTARTUP) longWarmUp();
+    else sensorWarmUp(); 
+  }
 }
 
 

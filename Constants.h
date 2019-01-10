@@ -14,6 +14,7 @@ public:
   static int TIMEZONE;
   static bool LONGSTARTUP;
   static char* STREAMS_URL;
+  static bool DEBUG;
 };
 
 #endif

@@ -10,3 +10,4 @@ static char* Constants::NAME = "Test Monitor";
 static int Constants::TIMEZONE = 8;
 static bool Constants::LONGSTARTUP = false;
 static char* Constants::STREAMS_URL = "streams.magnitude.io";
+static bool Constants::DEBUG = true;
