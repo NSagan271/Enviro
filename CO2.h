@@ -15,7 +15,9 @@ private:
   byte command[9] = {0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79};;
   byte packet[9];
   int cmd_timeout;
+  int value_timeout;
   int timeout;
+  unsigned int value;
   SoftwareSerial sensor;
 };
 

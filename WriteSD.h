@@ -14,7 +14,7 @@ class WriteSD
     void setUpFile(int, int, int);
   private:
     int timeout = 0;
-    void commandMode();
+    bool commandMode();
 };
 
 #endif

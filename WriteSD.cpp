@@ -1,32 +1,29 @@
 //code by Naomi Sagan
 
 #include "WriteSD.h"
-
-/*
- * 
- * DEFINE YOUR LOCATION NAME
- * 
- * 
- */
-#define LOC "Thaler"
+#include "Constants.h"
 
 #define TYPE ".csv"
 
 #define RESET 9
-SoftwareSerial logger(10,11);
+SoftwareSerial logger(11,10);
 
 void WriteSD::init(int day, int mo, int yr){
   pinMode(RESET, OUTPUT);
   logger.begin(9600);
   //Reset OpenLog
 
-  logger.listen();
   digitalWrite(RESET, LOW);
   delay(100);
   digitalWrite(RESET, HIGH);
   delay(1000);
 
- commandMode();
+  //logger.listen();
+
+  for (int i = 0; i < 2; i ++){
+    if (commandMode())
+      break;
+  }
   
   //make directory DATA if it doesn't already exist
   timeout = 0;
@@ -61,7 +58,9 @@ void WriteSD::writeData(float temp, float humid, float baro, int co2, int co, in
   commandMode();
   setUpFile(day, mo, yr);
   
-  logger.print(LOC);
+  logger.print(Constants::DEVICEID);
+  logger.print(F(", "));
+  logger.print(Constants::NAME);
   logger.print(F(", "));
   
   logger.print(day/10);
@@ -84,47 +83,48 @@ void WriteSD::writeData(float temp, float humid, float baro, int co2, int co, in
   logger.print(sec/10);
   logger.print(sec%10);
 
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(temp);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(humid);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(baro);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(co);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(co2);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(dust);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(no2);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.print(o3);
-  logger.print(F(" ,"));
+  logger.print(F(", "));
   logger.println(so2);
   
 }
 
-void WriteSD::commandMode(){
+bool WriteSD::commandMode(){
   //go into command mode
   logger.write(26);
   logger.write(26);
   logger.write(26);
 
-  
+  Serial.println(F("Attempting to go into command mode"));
   
   //Wait for OpenLog to respond with '>' to indicate we are in command mode
   timeout = 0;
   while(1) {
     delay(100);
     timeout++;
-    if (timeout > 100) return;
+    if (timeout > 100) return false; 
     if(logger.available())
       if(logger.read() == '>'){
         Serial.println(F("In command mode"));
         break;
       }
   }
+  return true;
 }
 
 void WriteSD::setUpFile(int day, int mo, int yr){
@@ -215,7 +215,7 @@ void WriteSD::setUpFile(int day, int mo, int yr){
 
 
   if(newfile){
-    logger.println(F("Location, Time, Temperature (*C), Humidity (%), Pressure (hPa), CO (PPB), CO2 (PPM), PM10 (ug/m3), NO2 (PPB), O3 (PPB), SO2 (PPB)"));
+    logger.println(F("Device ID, Device Name, Time, Temperature (*C), Humidity (%), Pressure (hPa), CO (PPB), CO2 (PPM), PM10 (ug/m3), NO2 (PPB), O3 (PPB), SO2 (PPB)"));
   }
 
 }

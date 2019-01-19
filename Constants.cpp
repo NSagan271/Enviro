@@ -1,7 +1,8 @@
 #include "Constants.h"
 
-static char* Constants::SSID = "TTKM4MAG-2.4G";
-static char* Constants::PASS = "cactus7723creak";
+static char* Constants::SSID[15] = {"TTKM4MAG-2.4G", "Naomi's iPhone", "SLHS Guest"};
+static char* Constants::PASS[15] = {"cactus7723creak", "password123", "asdfgh!@"};
+static int Constants::NUM_NETWORKS = 3;
 static char* Constants::DEVICEID = "AQ2000000800";
 static char* Constants::USER = "teacher1";
 static char* Constants::SOURCE = "AQ Monitor";
